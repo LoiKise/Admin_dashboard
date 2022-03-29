@@ -39,6 +39,7 @@ export default function Chart() {
 				// xóa đi phần tử cuối cùng trong res.data		
 				// res.data.pop();
 				setReport(res.data);
+				console.log(res.data)
 			});
 		}
 	}, [countries, selectedCountryId]);
@@ -54,7 +55,7 @@ export default function Chart() {
 				/>
 				<Highlight report={report} />
 				<Summary report={report} selectedCountryId={selectedCountryId} />
-      </Container>
+			</Container>
 
 		</div>
 	);

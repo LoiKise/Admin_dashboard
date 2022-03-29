@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import DashboardHeader from "./DashboardHeader";
 import DashboardMain from "./Main/DashboardMain";
 import classNames from "classnames";
-import DashboardNews from "./News/DashboardNews";
-import DashboardNewsCreate from "./News/DashboardNewsCreate";
-import DashboardNewsEdit from "./News/DashboardNewsEdit";
+import DashboardDoctors from "./News/DashboardDoctors";
+import DashboardDoctorsCreate from "./News/DashboardDoctorsCreate";
+import DashboardDoctorsEdit from "./News/DashboardDoctorsEdit";
+import DashboardPatient from "./Patient/DashboardPatient";
+import DashboardPatientsCreate from "./Patient/DashboardPatientsCreate";
+import DashboardPatientsEdit from "./Patient/DashboardPatientsEdit";
 
 export default function DashboardBody(props) {
   const tabId = props.tabId;
@@ -42,15 +45,28 @@ export default function DashboardBody(props) {
           onClick={props.setOpenMenuOnClick}
         ></div>
       )}
+      {props.openCreate && tabId === "2" && (
+        <DashboardPatientsCreate
+          setCloseCreateFunc={props.setCloseCreateFunc}
+          setToastFunc={setToastFunc}
+        />
+      )}
+      {props.openEdit && tabId === "2" && (
+        <DashboardPatientsEdit
+          setCloseEditFunc={props.setCloseEditFunc}
+          setToastFunc={setToastFunc}
+          order={order}
+        />
+      )}
 
       {props.openCreate && tabId === "3" && (
-        <DashboardNewsCreate
+        <DashboardDoctorsCreate
           setCloseCreateFunc={props.setCloseCreateFunc}
           setToastFunc={setToastFunc}
         />
       )}
       {props.openEdit && tabId === "3" && (
-        <DashboardNewsEdit
+        <DashboardDoctorsEdit
           setCloseEditFunc={props.setCloseEditFunc}
           setToastFunc={setToastFunc}
           order={order}
@@ -65,16 +81,16 @@ export default function DashboardBody(props) {
         orderNotice={props.orderNotice}
       />
       {tabId === "1" && <DashboardMain />}
-      {/* {tabId === "2" && (
-        <DashboardTranslation
+      {tabId === "2" && (
+        <DashboardPatient
           setOpenCreateFunc={props.setOpenCreateFunc}
           setOpenEditFunc={props.setOpenEditFunc}
           toast={toast}
           isChange={isChange}
         />
-      )} */}
+      )}
       {tabId === "3" && (
-        <DashboardNews
+        <DashboardDoctors
           setOpenCreateFunc={props.setOpenCreateFunc}
           setOpenEditFunc={props.setOpenEditFunc}
           toast={toast}

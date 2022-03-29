@@ -3,52 +3,57 @@ import { useSnackbar } from "notistack";
 import { withRouter } from "react-router-dom";
 import requestAPI from "../../../apis";
 import logo from "../../../Assets/Logo/COVID-19-icon-2FINAL.png";
-import bg from "https://benhvientthhatinh.vn/public/img/images/covid19.jpg";
+// import bg from "https://picsum.photos/200/300";
 
+import axios from 'axios';
 function Login(props) {
-  const { enqueueSnackbar } = useSnackbar();
+  //const { enqueueSnackbar } = useSnackbar();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
-    requestAPI("/dashboard/login", "POST", { username, password })
+    requestAPI("/login", "POST", { username, password })
+      // axios.post('http://localhost:3000/login', {
+      //   "username": "admin",
+      //   "password": "123123"
+      // })
       .then((res) => {
         if (res) {
           localStorage.setItem("accessToken", res.data.token);
-          enqueueSnackbar("Đăng nhập thành công", {
-            persist: false,
-            variant: "success",
-            preventDuplicate: true,
-            autoHideDuration: 3000,
-          });
+          // enqueueSnackbar("Đăng nhập thành công", {
+          //   persist: false,
+          //   variant: "success",
+          //   preventDuplicate: true,
+          //   autoHideDuration: 3000,
+          // });
           props.history.push("/admin/dashboard");
         }
       })
       .catch((err) => {
         if (err) {
           if (err.response?.status === 403) {
-            enqueueSnackbar("Bạn không đủ quyền truy cập vào địa chỉ này", {
-              persist: false,
-              variant: "error",
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
+            // enqueueSnackbar("Bạn không đủ quyền truy cập vào địa chỉ này", {
+            //   persist: false,
+            //   variant: "error",
+            //   preventDuplicate: true,
+            //   autoHideDuration: 3000,
+            // });
           } else if (err.response?.status === 400) {
-            enqueueSnackbar("Mật khẩu chưa chính xác", {
-              persist: false,
-              variant: "error",
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
+            // enqueueSnackbar("Mật khẩu chưa chính xác", {
+            //   persist: false,
+            //   variant: "error",
+            //   preventDuplicate: true,
+            //   autoHideDuration: 3000,
+            // });
           } else if (err.response?.status === 404) {
-            enqueueSnackbar("Không tồn tại tài khoản này", {
-              persist: false,
-              variant: "error",
-              preventDuplicate: true,
-              autoHideDuration: 3000,
-            });
+            // enqueueSnackbar("Không tồn tại tài khoản này", {
+            //   persist: false,
+            //   variant: "error",
+            //   preventDuplicate: true,
+            //   autoHideDuration: 3000,
+            // });
           }
         }
       });
@@ -56,12 +61,12 @@ function Login(props) {
 
   return (
     <div className="Login">
-      <img className="login-bg" src={bg} alt="pic_logigisc"></img>
+      <img className="login-bg" src="https://picsum.photos/200" alt="pic_logigisc"></img>
       <div className="login-overlay flex-center">
         <div className="login-box flex">
           <div className="login-left flex-center flex-col">
             <img
-              src={logo}
+              src="https://picsum.photos/200"
               alt="logo"
               style={{
                 backgroundColor: "#0063af",
@@ -97,7 +102,7 @@ function Login(props) {
           </div>
           <div className="login-right">
             <div className="animation-overlay"></div>
-            <img src={logo} alt="logo"></img>
+            <img src="https://picsum.photos/200" alt="logo"></img>
           </div>
         </div>
       </div>

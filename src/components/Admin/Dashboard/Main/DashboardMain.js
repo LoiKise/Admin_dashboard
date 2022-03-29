@@ -10,41 +10,32 @@ import DashboardTotalCount from "./DashboardTotalCount";
 import DashboardTopFive from "./DashboardTopFive";
 // import requestAPI from "../../../../apis";
 import { CircularProgress } from "@mui/material";
+import { getReportByCountry } from "../../../../apis";
 
 export default function DashboardMain() {
-  const [totalApplicants, setTotalApplicants] = useState(null);
-  const [totalJobs, setTotalJobs] = useState(null);
-  const [totalHotJobs, setTotalHotJobs] = useState(null);
-  const [totalNewJobs, setTotalNewJobs] = useState(null);
-  const [topAppliedCompany, setTopAppliedCompany] = useState(null);
-  const [topAppliedJob, setTopAppliedJob] = useState(null);
+  const [confirmed, setConfirmed] = useState(null);
+  const [Deaths, setDeaths] = useState(null);
+  const [Active, setActive] = useState(null);
+  const [Recovered, setRecovered] = useState(null);
 
-  // useEffect(() => {
-  //   Promise.all([
-  //     requestAPI("/survey/applicant/month", "GET").then((res) => res),
-  //     requestAPI("/survey/job/month", "GET").then((res) => res),
-  //     requestAPI("/jobs", "GET").then((res) => res),
-  //     requestAPI("/jobs", "GET").then((res) => res),
-  //     requestAPI("/survey/company/most/candidate", "GET").then((res) => res),
-  //     requestAPI("/survey/job/most/candidate", "GET").then((res) => res),
-  //   ])
-  //     .then((data) => {
-  //       setTotalApplicants(data[0].data.total);
-  //       setTotalJobs(data[1].data.total);
-  //       setTotalHotJobs(data[2].data.total);
-  //       setTotalNewJobs(data[3].data.total);
 
-  //       setTopAppliedCompany(data[4].data);
 
-  //       setTopAppliedJob(data[5].data);
-  //     })
-  //     .catch((error) => console.log(error));
-  // }, []);
+  useEffect(() => {
+
+    getReportByCountry('vn').then((res) => {
+      // xóa đi phần tử cuối cùng trong res.data		
+      // res.data.pop();
+      setConfirmed(res.data[res.data.length - 1].Confirmed);
+      setDeaths(res.data[res.data.length - 1].Deaths);
+      setActive(res.data[res.data.length - 1].Active);
+      setRecovered(res.data[res.data.length - 1].Recovered);
+    })
+  }, []);
   const totalCount = [
     {
       id: 1,
-      title: "Việc làm mới",
-      count: totalNewJobs ? totalNewJobs : <CircularProgress />,
+      title: "số ca nhiễm",
+      count: confirmed ? confirmed : <CircularProgress />,
       percent: 30,
       isDecrease: false,
       color: "darkpurple",
@@ -52,8 +43,8 @@ export default function DashboardMain() {
     },
     {
       id: 2,
-      title: "Việc làm hấp dẫn",
-      count: totalHotJobs ? totalHotJobs : <CircularProgress />,
+      title: "số ca tử vong",
+      count: Deaths ? Deaths : <CircularProgress />,
       percent: 10,
       isDecrease: true,
       color: "darkred",
@@ -61,8 +52,8 @@ export default function DashboardMain() {
     },
     {
       id: 3,
-      title: "Tổng việc làm",
-      count: totalJobs ? totalJobs : <CircularProgress />,
+      title: "số ca hồi phục",
+      count: Active ? Active : <CircularProgress />,
       percent: 20,
       isDecrease: false,
       color: "darkblue",
@@ -70,8 +61,8 @@ export default function DashboardMain() {
     },
     {
       id: 4,
-      title: "Tổng ứng viên",
-      count: totalApplicants ? totalApplicants : <CircularProgress />,
+      title: "Tổng bác sĩ",
+      count: 500,
       percent: 19,
       isDecrease: true,
       color: "lightblue",
@@ -90,31 +81,31 @@ export default function DashboardMain() {
       <div className="row flex">
         <DashboardTopFive
           icon={faUser}
-          title="TOP công ty ứng tuyển"
+          title="số ca nhiễm"
           color="lightblue"
-          data={topAppliedCompany}
-          table={[
-            {
-              title: "Tên công ty",
-            },
-            {
-              title: "Tổng ứng viên",
-            },
-          ]}
+        // data={topAppliedCompany}
+        // table={[
+        //   {
+        //     title: "Tên công ty",
+        //   },
+        //   {
+        //     title: "Tổng ứng viên",
+        //   },
+        // ]}
         />
         <DashboardTopFive
           icon={faTshirt}
-          title="TOP việc làm ứng tuyển"
+          title="số ca tử vong"
           color="pink"
-          data={topAppliedJob}
-          table={[
-            {
-              title: "Tên việc làm",
-            },
-            {
-              title: "Tổng ứng viên",
-            },
-          ]}
+        // data={topAppliedJob}
+        // table={[
+        //   {
+        //     title: "Tên việc làm",
+        //   },
+        //   {
+        //     title: "Tổng ứng viên",
+        //   },
+        // ]}
         />
       </div>
     </div>

@@ -41,37 +41,6 @@ function Dashboard() {
   const setTabIdOnClick = (id) => {
     setTabId(id);
   };
-  // const verifyToken = useCallback(async () => {
-  //   if (ACCESS_TOKEN()) {
-  //     // requestAPI("/admin/me", "GET", null, {
-  //     //   Authorization: "Bearer " + ACCESS_TOKEN(),
-  //     // })
-  //     //   .then((res) => {
-  //     //     if (res) {
-  //     //       if (res.data?.user) {
-  //     //         setUserInfo(res.data?.user);
-  //     //       } else {
-  //     //         history.push("/dashboard");
-  //     //         enqueueSnackbar(
-  //     //           "Đã phát hiện lỗi truy cập, vui lòng đăng nhập lại",
-  //     //           {
-  //     //             persist: false,
-  //     //             variant: "error",
-  //     //             preventDuplicate: true,
-  //     //             autoHideDuration: 3000,
-  //     //           }
-  //     //         );
-  //     //       }
-  //     //     }
-  //     //   })
-  //     //   .catch(() => history.push("/dashboard"));
-  //   } else {
-  //     history.push("/dashboard");
-  //   }
-  // }, [history, enqueueSnackbar]);
-  // useEffect(() => {
-  //   verifyToken();
-  // }, [verifyToken]);
 
   const setOpenMenuOnClick = () => {
     if (window.innerWidth <= 1110) {

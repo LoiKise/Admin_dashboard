@@ -10,45 +10,41 @@ import CustomLoadingOverlay from "../Utils/CustomLoadingOverlay";
 import DashboardDialogConfirm from "../Utils/DashboardDialogConfirm";
 import { useHistory } from "react-router";
 import { useSelector } from "react-redux";
-import { CheckUpdate } from "../../../../data/dashboard/news/newSlice";
+import { CheckUpdate } from "../../../../data/dashboard/patients/patientSlice";
 import { useDispatch } from "react-redux";
-// import requestAPI from "../../../../apis";
+import axios from 'axios';
+import requestAPI from "../../../../apis";
 
 export default function DashboardTable(props) {
-  const [news, setNews] = useState([]);
-  const [constNews, setConstNews] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [constPatients, setConstPatients] = useState([]);
   const [selection, setSelection] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const update = useSelector((state) => state.news.isUpdate);
+  const update = useSelector((state) => state.patients.isUpdate);
   const [open, setOpen] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
+
   const history = useHistory();
   const dispatch = useDispatch();
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   requestAPI("/jobs", "GET")
-  //     .then((res) => {
-  //       setNews(res.data.data);
-  //       setConstNews(res.data.data);
-  //       setIsLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       if (err) {
-  //         if (err.response.status === 403 || err.response.status === 401) {
-  //           history.push("/dashboard");
-  //           enqueueSnackbar(
-  //             "Đã phát hiện lỗi truy cập, vui lòng đăng nhập lại",
-  //             {
-  //               persist: false,
-  //               variant: "error",
-  //               preventDuplicate: true,
-  //               autoHideDuration: 3000,
-  //             }
-  //           );
-  //         }
-  //       }
-  //     });
-  // }, [update]);
+  useEffect(() => {
+    setIsLoading(true);
+    //xios.get('http://localhost:3000/patients')
+    requestAPI("/patients", "GET")
+      .then((res) => {
+        setPatients(res.data.data);
+        setPatients(res.data.data);
+        setIsLoading(false);
+        console.log(res.data.data)
+      })
+      .catch((err) => {
+        // if (err) {
+        //   if (err.response.status === 403 || err.response.status === 401) {
+        //     history.push("/dashboard");
+
+        //   }
+        // }
+        console.log(err)
+      });
+  }, [update]);
 
   const deleteOnClick = () => {
     // if (selection.length > 0) {
@@ -85,14 +81,14 @@ export default function DashboardTable(props) {
     const searchInput = event.target.value.trim();
     const search = [];
     if (searchInput.trim() !== "") {
-      for (let i in constNews) {
-        if (constNews[i].name_vi.includes(searchInput)) {
-          search.push(constNews[i]);
+      for (let i in constPatients) {
+        if (constPatients[i].name_vi.includes(searchInput)) {
+          search.push(constPatients[i]);
         }
       }
-      setNews(search);
+      setPatients(search);
     } else {
-      setNews(constNews);
+      setPatients(constPatients);
     }
   };
   const handleOpenDialogDelete = () => {
@@ -129,7 +125,7 @@ export default function DashboardTable(props) {
               }}
               loading={isLoading}
               columns={props.table}
-              rows={news}
+              rows={patients}
               pagination
               pageSize={5}
               rowsPerPageOptions={[5]}

@@ -2,28 +2,36 @@ import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useSnackbar } from "notistack";
+import { useDispatch, useSelector } from "react-redux";
 import DashboardTextInput2 from "./../Utils/DashboardTextInput2";
-import { useDispatch } from "react-redux";
-import { CheckUpdate } from "../../../../data/dashboard/news/newSlice";
+import { CheckUpdate } from "../../../../data/dashboard/doctors/doctorSlice";
 import DashboardSelectInput2 from "../Utils/DashboardSelectInput2";
+import DashboardSelectInputOne from "../Utils/DashboardSelectInputOne";
 import { Editor } from "react-draft-wysiwyg";
-import { convertToRaw } from "draft-js";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 // import requestAPI from "../../../../apis";
-import DashboardSelectInputOne from "../Utils/DashboardSelectInputOne";
 import DashboardCheckboxList from "../Utils/DashboardCheckboxList";
 import DashboardDateInput from "../Utils/DashboardDateInput";
 
-export default function DashboardNewsrCreate(props) {
+export default function DashboardDoctorsEdit(props) {
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
   const createForm = useRef();
+  const dispatch = useDispatch();
+  const update = useSelector((state) => state.doctors.updateDoctors);
+  const job_content_vi = useSelector(
+    (state) => state.doctors.updateDoctors.job_content_vi
+  );
+  const job_content_en = useSelector(
+    (state) => state.doctors.updateDoctors.job_content_en
+  );
   const [jobList, setJobList] = useState([]);
-  const [editorState_vi, setEditorState_vi] = useState();
-  const [editorState_en, setEditorState_en] = useState();
   const [companyList, setCompanyList] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [listCategories, setListCategories] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [levelList, setLevelList] = useState([]);
   const [isRequire, setIsRequire] = useState(false);
@@ -56,6 +64,7 @@ export default function DashboardNewsrCreate(props) {
     maxSalary_vi: 0,
     minSalary_en: 0,
     maxSalary_en: 0,
+    idDelete: [],
     commission: 0,
     is_best_job: false,
     is_manage_job: false,
@@ -63,6 +72,55 @@ export default function DashboardNewsrCreate(props) {
     city_id: 0,
     expiration_date: "",
   });
+  const generateEditorStateFromValue = (value) => {
+    const contentBlock = htmlToDraft(value || "");
+    const contentState = ContentState.createFromBlockArray(
+      contentBlock.contentBlocks
+    );
+    return EditorState.createWithContent(contentState);
+  };
+
+  const [editorState_vi, setEditorState_vi] = useState(
+    generateEditorStateFromValue(job_content_vi)
+  );
+  const [editorState_en, setEditorState_en] = useState(
+    generateEditorStateFromValue(job_content_en)
+  );
+  useEffect(() => {
+    if (update) {
+      let category = [];
+      for (let i = 0; i < update.job_category.length; i++) {
+        category.push(update.job_category[i].category_id);
+      }
+      setData({
+        id: update.id,
+        name_vi: update.name_vi,
+        name_en: update.name_en,
+        company_id: update.company?.id,
+        level: update.configuration_id,
+        job_content_vi: update.job_content_vi,
+        job_content_en: update.job_content_en,
+        skill_vi: update.skill_vi,
+        skill_en: update.skill_en,
+        language: update.language,
+        salary: update.salary,
+        minSalary_vi: update.minSalary_vi,
+        maxSalary_vi: update.maxSalary_vi,
+        minSalary_en: update.minSalary_en,
+        maxSalary_en: update.maxSalary_en,
+        categories: [],
+        idDelete: [0],
+        commission: update.commission,
+        is_best_job: update.is_best_job,
+        is_manage_job: update.is_manage_job,
+        is_category_job: update.is_category_job,
+        city_id: update.city_id,
+        expiration_date: update.expiration_date,
+      });
+      setCategories(category);
+      setListCategories(category);
+    }
+  }, [update]);
   // useEffect(() => {
   //   requestAPI("/categories", "GET")
   //     .then((res) => setJobList(res.data.data))
@@ -80,14 +138,22 @@ export default function DashboardNewsrCreate(props) {
   //     .then((res) => setLevelList(res.data.data))
   //     .catch((err) => console.log(err));
   // }, []);
-  //Handle Event and Request DataBase
+  // const updateOrder = async (dataFormat) => {
+  //   const data = await requestAPI(
+  //     `/job/update?id=${dataFormat.id}`,
+  //     "PUT",
+  //     dataFormat
+  //   );
+  //   return data;
+  // };
   const onSubmit = (event) => {
     event.preventDefault();
     setIsRequire(true);
     const body = {
+      id: data.id,
       name_vi: data.name_vi.trim(),
       name_en: data.name_en.trim(),
-      company_id: data.company_id,
+      company: data.company_id,
       level: data.level,
       job_content_vi: data.job_content_vi,
       job_content_en: data.job_content_en,
@@ -99,6 +165,7 @@ export default function DashboardNewsrCreate(props) {
       maxSalary_vi: data.maxSalary_vi,
       minSalary_en: data.minSalary_en,
       maxSalary_en: data.maxSalary_en,
+      idDelete: data.idDelete,
       commission: data.commission,
       is_best_job: data.is_best_job,
       is_manage_job: data.is_manage_job,
@@ -146,14 +213,12 @@ export default function DashboardNewsrCreate(props) {
     }
     if (
       !body.level ||
-      !body.categories ||
-      !body.company_id ||
+      !body.company ||
       !body.city_id ||
       !body.name_vi ||
       !body.name_en ||
       !body.skill_vi ||
       !body.skill_en ||
-      !body.categories ||
       !body.language
     ) {
       enqueueSnackbar("Vui lòng nhập đầy đủ các trường", {
@@ -212,20 +277,9 @@ export default function DashboardNewsrCreate(props) {
     if (!isCheck) {
       return;
     }
-    // const getData = async () => {
-    //   await requestAPI("/job", "POST", body).then(() => {
-    //     props.setCloseCreateFunc(false);
-    //     dispatch(CheckUpdate());
-    //     enqueueSnackbar("Tạo đơn thành công", {
-    //       persist: false,
-    //       variant: "success",
-    //       preventDuplicate: true,
-    //       autoHideDuration: 3000,
-    //     });
-    //   });
-    // };
-    // getData();
+    // 
   };
+
   const onEditorStateChange_vi = (editorState_vi) => {
     setEditorState_vi(editorState_vi);
     setData({
@@ -249,11 +303,11 @@ export default function DashboardNewsrCreate(props) {
     <div className="DashboardProductInfo">
       <div className="create-box2">
         <div className="create-box-title flex">
-          <h2 className="create-box-title-text ">Thông tin bài tuyển dụng</h2>
+          <h2 className="create-box-title-text ">Thông tin đơn hàng</h2>
           <div
-            className="btn btn-outline-danger btn-sm"
+            className="btn btn-outline-danger"
             onClick={() => {
-              props.setCloseCreateFunc(false);
+              props.setCloseEditFunc(false);
             }}
           >
             <FontAwesomeIcon icon={faTimes} />
@@ -321,7 +375,6 @@ export default function DashboardNewsrCreate(props) {
                     wrapperClassName="borderNone wrapperClassName"
                     editorClassName="editorClassName"
                     onEditorStateChange={onEditorStateChange_vi}
-                    style={{ border: "none" }}
                   />
                 </div>
               </div>
@@ -379,7 +432,6 @@ export default function DashboardNewsrCreate(props) {
                     toolbarClassName="toolbarClassName"
                     wrapperClassName="borderNone wrapperClassName"
                     editorClassName="editorClassName"
-                    style={{ border: "none" }}
                     onEditorStateChange={onEditorStateChange_en}
                   />
                 </div>
@@ -390,7 +442,7 @@ export default function DashboardNewsrCreate(props) {
             <DashboardDateInput
               title={"Ngày hết hạn"}
               placeholder={"Ngày hết hạn"}
-              isRequire={true}
+              isRequire={isRequire}
               data={data}
               setData={setData}
               objectKey={"expiration_date"}
@@ -401,9 +453,12 @@ export default function DashboardNewsrCreate(props) {
             title="Ngành nghề"
             data={data}
             setData={setData}
-            job
+            setData1={setCategories}
             list={jobList}
             objectKey={"categories"}
+            objectKey1={categories}
+            category={listCategories}
+            objectKey2={"idDelete"}
           />
           <DashboardSelectInputOne
             isRequire={isRequire}
@@ -458,10 +513,9 @@ export default function DashboardNewsrCreate(props) {
             data={data}
             list={typeJob}
           />
-
           <div className="flex-center" style={{ marginTop: "40px" }}>
-            <button className=" btn btn-outline-success">
-              Tạo Bài Tuyển Dụng
+            <button className="btn btn-outline-success" onFocusin>
+              Cập nhật bài tuyển dụng
             </button>
           </div>
         </form>
